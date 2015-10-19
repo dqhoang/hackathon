@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="{% static 'polls/bootstrap.min.css' %}"/ >
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'polls:index' %}">Home</a></li>
+                    <li><a href="{% url 'polls:index' %}">Polls</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<div class="container body-content">
+		<br/>
+		<br/>
+				
+		<h1>Polls</h1>
+
+		{% if latest_question_list %}
+			<ul class="well list-group">
+			{%  for question in latest_question_list %}
+				<li class="list-group-item"><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>No polls are available.</p>
+		{% endif %}
+	</div>
+</body>
+
+<footer class="navbar navbar-fixed-bottom well">
+	<p class="text-center">
+		Written By <a href="mailto:dhoang@rsimail.com">Duy Hoang</a> in Django
+	</p>
+</footer>

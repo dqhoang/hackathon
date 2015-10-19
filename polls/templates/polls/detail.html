@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="{% static 'polls/bootstrap.min.css' %}"/ >
+</head>
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'polls:index' %}">Home</a></li>
+                    <li><a href="{% url 'polls:index' %}">Polls</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<div class="container body-content">
+		<br/>
+		<br/>
+
+		<h1>{{ question.question_text}}</h1>
+
+		{% if error_message %}<p class="bg-danger">{{error_message}}</p>{%endif%}
+
+
+		<form class="form-group" action="{% url 'polls:vote' question.id %}" method="post">
+		{% csrf_token %}
+		<div class="well">
+			{% for choice in question.choice_set.all %}
+				<input type="radio" name="choice" id="choice {{ forloop.counter }}" value="{{choice.id}}"/>
+				<label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+			{% endfor %}
+		</div>
+		<input type="submit" value="Vote" class="btn btn-default" />
+		</form>
+	</div>
+
+</body>
+
+<footer class="navbar navbar-fixed-bottom well">
+	<p class="text-center">
+		Written By <a href="mailto:dhoang@rsimail.com">Duy Hoang</a> in Django
+	</p>
+</footer>
