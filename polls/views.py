@@ -3,6 +3,10 @@ from django.shortcuts	import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.views 		import generic
 
+import feedparser
+import json
+from itertools import *
+
 from .models 			import Question, Choice
 
 # Create your views here.
@@ -60,3 +64,14 @@ def vote(request, question_id):
 		selected_choice.votes += 1
 		selected_choice.save()
 		return HttpResponseRedirect(reverse('polls:results', args(p.id,)))
+
+
+def FeedsView(request):
+	if request.post:
+		catalog = "https://greengov.data.ca.gov/catalog.rss"
+		feed = feedparser.parse( catalog )
+		items = [{
+			'link' : x['link']}
+			for x in feed['items']]
+		return HttpResponse(json.dumps(feed['items']), content_type="application/json")
+	return;
