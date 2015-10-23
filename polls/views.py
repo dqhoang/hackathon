@@ -67,11 +67,11 @@ def vote(request, question_id):
 
 
 def FeedsView(request):
-	if request.post:
-		catalog = "https://greengov.data.ca.gov/catalog.rss"
-		feed = feedparser.parse( catalog )
-		items = [{
-			'link' : x['link']}
-			for x in feed['items']]
-		return HttpResponse(json.dumps(feed['items']), content_type="application/json")
-	return;
+	#if request.POST:
+	catalog = "https://greengov.data.ca.gov/catalog.rss"
+	feed = feedparser.parse( catalog )
+	items = [{
+		'link' : x['link']}
+		for x in feed['items']]
+	return HttpResponse(json.dumps(feed['items']), content_type="application/json")
+	#return;
