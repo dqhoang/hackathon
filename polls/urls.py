@@ -14,4 +14,6 @@ urlpatterns = [
 
 	# Feeds
 	url(r'^feeds/$', views.FeedsView, name='feeds'),
+	url(r'^(?P<resource>.*)/getData/$', views.getData, name='getData'),
+    url(r'^getList/$', views.getList, name='getList'),
 ]

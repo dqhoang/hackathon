@@ -3,55 +3,122 @@
 {% load staticfiles %}
 
 <head>
-	<link rel="stylesheet" type="text/css" href="{% static 'polls/bootstrap.min.css' %}"/ >
-	
-	<script src="http://d3js.org/d3.v3.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'polls/bootstrap.min.css' %}"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script type="text/javascript" src="{% static 'polls/nv.d3.js' %}"></script>
+
 
 </head>
 
 <body>
 
-	<div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="{% url 'polls:index' %}">Home</a></li>
-                    <li><a href="{% url 'polls:index' %}">Polls</a></li>
-                </ul>
-            </div>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'polls:index' %}">Home</a></li>
+                <li><a href="{% url 'polls:index' %}">Polls</a></li>
+            </ul>
         </div>
     </div>
+</div>
 
-	<div class="container body-content">
-		<br/>
-		<br/>
-				
-		<h1>Polls</h1>
+<div class="container body-content">
+    <br/>
+    <br/>
 
-		{% if latest_question_list %}
-			<ul class="well list-group">
-			{%  for question in latest_question_list %}
-				<li class="list-group-item"><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
-			{% endfor %}
-			</ul>
-		{% else %}
-			<p>No polls are available.</p>
-		{% endif %}
+    <h1>Polls</h1>
 
-		<div class="chart"/>
-	</div>
+    {% if latest_question_list %}
+        <ul class="well list-group">
+            {% for question in latest_question_list %}
+                <li class="list-group-item"><a
+                        href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No polls are available.</p>
+    {% endif %}
+    <button onclick="showChart()" class="btn btn-warning" type="submit">Display Circle</button>
+
+    <ul id="files" class="well list-group">
+        <button class="button" onclick="myClick()" class="btn btn-default" type="submit">List all Dumps</button>
+        <script>
+
+            function myClick() {
+                $('.chart').html('');
+                $.getJSON('{% url 'polls:getList' %}', function(data){
+                    $.each(data, function(index){
+                        var name = (data[index]['file']).slice(0,-5);
+                        var but = document.createElement("button");
+                        but.id = name;
+                        but.className = "btn btn-link";
+                        but.innerHTML = name;
+                        but.onclick = chart;
+                       $('#files').append(
+                               $('<li/>', {
+                                   'class' : 'list-group-item',
+                                   html: but
+                               })
+                       );
+                    });
+            });
+            }
+
+            function syntaxHighlight(json) {
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                    var cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
+            }
+
+            function chart(){
+                var link = 'http://127.0.0.1:8000/polls/'.concat(this.id,'/getData/');
+                $.getJSON(link,function(data)
+                {
+                    $('#files li').remove();
+                    var pretty = JSON.stringify(data,undefined,4);
+                    $('.chart').html(pretty);
+                });
+            }
+
+            function showChart()
+            {
+                $('#files li').remove();
+                $('.chart').html('');
+                d3.select('.chart').append('svg').attr("width", 50).attr("height", 50).append("circle").attr("cx", 25).attr("cy", 25).attr("r", 25).style("fill", "Red");
+            }
+
+        </script>
+    </ul>
+
+    <div id="chart" class="chart">
+    </div>
+</div>
 </body>
 
 <footer class="navbar navbar-fixed-bottom well">
-	<p class="text-center">
-		Written By <a href="mailto:dhoang@rsimail.com">Duy Hoang</a> in Django
-	</p>
+    <p class="text-center">
+        Written By <a href="mailto:dhoang@rsimail.com">Duy Hoang</a> in Django
+    </p>
 </footer>
-<script type="text/javascript" src="{% static 'polls/polls.js' %}" />
