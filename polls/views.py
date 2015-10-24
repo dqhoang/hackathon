@@ -6,6 +6,8 @@ from django.views 		import generic
 import feedparser
 import json
 from itertools import *
+import urllib
+import requests
 
 from .models 			import Question, Choice
 
@@ -67,11 +69,22 @@ def vote(request, question_id):
 
 
 def FeedsView(request):
-	#if request.POST:
 	catalog = "https://greengov.data.ca.gov/catalog.rss"
 	feed = feedparser.parse( catalog )
 	items = [{
-		'link' : x['link']}
-		for x in feed['items']]
-	return HttpResponse(json.dumps(feed['items']), content_type="application/json")
-	#return;
+		'resource' : x['link'].rpartition('/')[2],
+		'link' : "https://greengov.data.ca.gov/resource/{0}.json".format(x['link'].rpartition('/')[2] )}
+		for x in feed['entries']]
+	f = open('dump.json', 'w')
+	for row in feed['entries']:
+		resource = row['link'].rpartition('/')[2]
+		link = "https://greengov.data.ca.gov/resource/{0}.json".format(resource)	
+		myFile = open('{0}.json'.format(resource), 'w')
+		response = requests.get(link, headers={'X-App-Token':'eZ54Yp2ubYQAEO2IvzxR7pPQu'})
+
+		myFile.write(json.dumps(response.json()))
+		myFile.close()
+		f.write("{0}\n".format(link))
+	f.close()
+	return HttpResponse(json.dumps(feed['entries']))
+	
