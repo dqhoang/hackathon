@@ -4,7 +4,9 @@
 
 <head>
 	<link rel="stylesheet" type="text/css" href="{% static 'polls/bootstrap.min.css' %}"/ >
+	
 	<script src="http://d3js.org/d3.v3.js"></script>
+
 </head>
 
 <body>
@@ -42,6 +44,8 @@
 		{% else %}
 			<p>No polls are available.</p>
 		{% endif %}
+
+		<div class="chart"/>
 	</div>
 </body>
 
@@ -50,3 +54,4 @@
 		Written By <a href="mailto:dhoang@rsimail.com">Duy Hoang</a> in Django
 	</p>
 </footer>
+<script type="text/javascript" src="{% static 'polls/polls.js' %}" />
